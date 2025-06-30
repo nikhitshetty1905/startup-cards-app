@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StartupCards - Find Your Next Big Idea</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        .app-container {
+            max-width: 400px;
+            margin: 0 auto;
+            height: 100vh;
+            position: relative;
+            background: #0f0f0f;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Onboarding Styles */
+        .onboarding {
+            padding: 60px 40px;
+            text-align: center;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: #0a0a0a;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .onboarding::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 107, 53, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 80%, rgba(247, 147, 30, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .onboarding-content {
+            position: relative;
+            z-index: 1;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .onboarding h1 {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 60px;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .onboarding-step {
+            margin: 40px 0;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .onboarding-step:nth-child(2) { animation-delay: 0.3s; }
+        .onboarding-step:nth-child(3) { animation-delay: 0.6s; }
+        .onboarding-step:nth-child(4) { animation-delay: 0.9s; }
+        .onboarding-step:nth-child(5) { animation-delay: 1.2s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .onboarding p {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #888;
+            margin-bottom: 0;
+            font-weight: 400;
+        }
+
+        .btn {
+            padding: 16px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 8px 0;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid transparent;
+        }
+
+        .btn-primary:hover {
+            background: #f5f5f5;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Main App Styles */
+        .main-app {
+            display: none;
+            height: 100vh;
+        }
+
+        .header {
+            padding: 20px;
+            background: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(45, 45, 45, 0.5);
+            border-radius: 20px;
+            padding: 4px;
+        }
+
+        .nav-tab {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: #888;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-tab.active {
+            background: #ff6b35;
+            color: white;
+        }
+
+        /* Card Container */
+        .card-container {
+            padding: 20px;
+            height: calc(100vh - 80px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Startup Card */
+        .startup-card {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .startup-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+        }
+
+        .startup-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .card-tagline {
+            font-size: 16px;
+            color: #b0b0b0;
+            margin-bottom: 12px;
+        }
+
+        .category-tag {
+            display: inline-block;
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff6b35;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .signal-score {
+            float: right;
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .card-section {
+            margin: 20px 0;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #ff6b35;
+            margin-bottom: 8px;
+        }
+
+        .section-content {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #b0b0b0;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 15, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .like-btn {
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            color: white;
+        }
+
+        .dislike-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #feca57, #ff9ff3);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Vault Styles */
+        .vault-container {
+            padding: 20px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .vault-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: rgba(45, 45, 45, 0.5);
+            border-radius: 12px;
+            padding: 4px;
+        }
+
+        .vault-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: #888;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vault-tab.active {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .vault-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .vault-card {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .vault-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .vault-card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .vault-card-tagline {
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* Premium Overlay */
+        .premium-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .premium-modal {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 350px;
+            margin: 20px;
+            border: 1px solid #333;
+        }
+
+        .premium-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .premium-features {
+            text-align: left;
+            margin: 20px 0;
+        }
+
+        .premium-feature {
+            display: flex;
+            align-items: center;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+
+        .premium-feature::before {
+            content: '✓';
+            color: #00d4aa;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        .end-of-day {
+            text-align: center;
+            padding: 60px 30px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 20px;
+            margin: 20px;
+        }
+
+        .end-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #ff6b35;
+        }
+
+        .end-subtitle {
+            font-size: 16px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        .hidden { display: none; }
+        .blur { filter: blur(5px); pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Onboarding Section -->
+        <div id="onboarding" class="onboarding">
+            <div class="onboarding-content">
+                <div class="onboarding-step">
+                    <h1>StartupCards</h1>
+                </div>
+                <div class="onboarding-step">
+                    <p>Daily startup ideas from real customer complaints</p>
+                </div>
+                <div class="onboarding-step">
+                    <p>AI analyzes conversations to find validated problems</p>
+                </div>
+                <div class="onboarding-step">
+                    <p>One brilliant idea. Every day.</p>
+                </div>
+                <div class="onboarding-step">
+                    <button class="btn btn-primary" onclick="showTodaysIdea()">View Today's Idea</button>
+                    <button class="btn btn-secondary" onclick="signUp()">Continue with Google</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="mainApp" class="main-app">
+            <div class="header">
+                <div class="logo">StartupCards</div>
+                <div class="nav-tabs">
+                    <button class="nav-tab active" onclick="showFeed()">Feed</button>
+                    <button class="nav-tab" onclick="showVault()">Vault</button>
+                </div>
+            </div>
+
+            <!-- Daily Feed -->
+            <div id="feedContainer" class="card-container">
+                <div id="startupCard" class="startup-card" onclick="toggleCardDetails()">
+                    <div class="card-header">
+                        <h2 class="card-title" id="cardTitle">PetCare Connect</h2>
+                        <p class="card-tagline" id="cardTagline">24/7 virtual vet consultations for anxious pet parents</p>
+                        <span class="category-tag" id="cardCategory">HealthTech</span>
+                        <span class="signal-score" id="signalScore">Score: 92</span>
+                    </div>
+                    
+                    <div class="card-section">
+                        <div class="section-title">The Pain Point</div>
+                        <div class="section-content" id="painPoint">Pet owners panic at 2am when their dog won't eat or cat seems lethargic. Emergency vets cost $500+ and most issues aren't emergencies. Found 12,000+ Reddit posts about "Is my pet dying?" anxiety.</div>
+                    </div>
+
+                    <div id="cardDetails" class="hidden">
+                        <div class="card-section">
+                            <div class="section-title">The Fix</div>
+                            <div class="section-content">AI-powered triage + licensed vet video calls. $29/month subscription includes unlimited consultations, symptom checker, and medication reminders.</div>
+                        </div>
+
+                        <div class="card-section">
+                            <div class="section-title">Target Audience</div>
+                            <div class="section-content">Millennial & Gen Z pet parents in urban areas. 73% female, household income $60k+, first-time pet owners most likely to pay premium.</div>
+                        </div>
+
+                        <div class="card-section">
+                            <div class="section-title">Go-To-Market</div>
+                            <div class="section-content">Partner with pet insurance companies, advertise on pet anxiety forums, sponsor pet influencers. Launch in 3 major cities first.</div>
+                        </div>
+
+                        <div class="card-section">
+                            <div class="section-title">The Unfair Advantage</div>
+                            <div class="section-content">Licensed vet network + AI diagnostic tool. Regulatory moat - competitors need vet partnerships and AI training data.</div>
+                        </div>
+
+                        <div class="card-section">
+                            <div class="section-title">Monetization</div>
+                            <div class="section-content">$29/month subscriptions. Premium $49/month with house calls. Corporate B2B for employee pet benefits at $15/employee/month.</div>
+                        </div>
+
+                        <div class="card-section">
+                            <div class="section-title">Reality Check</div>
+                            <div class="section-content">Requires licensed vets (expensive), regulatory compliance varies by state, established players like Whiskers.vet exist but focus on appointments not anxiety relief.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="endOfDay" class="end-of-day hidden">
+                    <div class="end-title">That's it for today! 🎉</div>
+                    <div class="end-subtitle">Check back tomorrow for the next big thing. Great entrepreneurs know when to pause and reflect.</div>
+                </div>
+            </div>
+
+            <!-- Vault -->
+            <div id="vaultContainer" class="vault-container hidden">
+                <div class="vault-tabs">
+                    <button class="vault-tab active" onclick="showMyVault()">My Vault</button>
+                    <button class="vault-tab" onclick="showArchive()">Archive</button>
+                </div>
+
+                <div id="myVault" class="vault-grid">
+                    <div class="vault-card">
+                        <div class="vault-card-title">PetCare Connect</div>
+                        <div class="vault-card-tagline">24/7 virtual vet consultations</div>
+                    </div>
+                    <div class="vault-card">
+                        <div class="vault-card-title">FocusFlow</div>
+                        <div class="vault-card-tagline">AI productivity coach for ADHD professionals</div>
+                    </div>
+                </div>
+
+                <div id="archive" class="vault-grid hidden">
+                    <div class="vault-card blur">
+                        <div class="vault-card-title">Premium Feature</div>
+                        <div class="vault-card-tagline">Upgrade to access full archive</div>
+                    </div>
+                    <div class="vault-card blur">
+                        <div class="vault-card-title">Premium Feature</div>
+                        <div class="vault-card-tagline">Upgrade to access full archive</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn dislike-btn" onclick="dislikeIdea()">✕</button>
+                <button class="action-btn save-btn" onclick="saveIdea()">★</button>
+                <button class="action-btn like-btn" onclick="likeIdea()">♥</button>
+            </div>
+        </div>
+
+        <!-- Premium Overlay -->
+        <div id="premiumOverlay" class="premium-overlay">
+            <div class="premium-modal">
+                <div class="premium-title">Go Premium</div>
+                <div class="premium-features">
+                    <div class="premium-feature">Access full archive of all ideas</div>
+                    <div class="premium-feature">Unlimited saves</div>
+                    <div class="premium-feature">Advanced search & filters</div>
+                    <div class="premium-feature">Weekly trend reports</div>
+                    <div class="premium-feature">Export ideas to PDF</div>
+                </div>
+                <button class="btn btn-primary" onclick="upgradeToPremium()">Upgrade for $9.99/month</button>
+                <button class="btn btn-secondary" onclick="closePremium()" style="margin-top: 10px;">Maybe Later</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'onboarding';
+        let cardSwiped = false;
+        let savedIdeas = ['PetCare Connect', 'FocusFlow'];
+        let isSignedUp = false;
+
+        const startupIdeas = [
+            {
+                title: "PetCare Connect",
+                tagline: "24/7 virtual vet consultations for anxious pet parents",
+                category: "HealthTech",
+                score: 92,
+                painPoint: "Pet owners panic at 2am when their dog won't eat or cat seems lethargic. Emergency vets cost $500+ and most issues aren't emergencies. Found 12,000+ Reddit posts about \"Is my pet dying?\" anxiety.",
+                fix: "AI-powered triage + licensed vet video calls. $29/month subscription includes unlimited consultations, symptom checker, and medication reminders.",
+                audience: "Millennial & Gen Z pet parents in urban areas. 73% female, household income $60k+, first-time pet owners most likely to pay premium.",
+                gtm: "Partner with pet insurance companies, advertise on pet anxiety forums, sponsor pet influencers. Launch in 3 major cities first.",
+                moat: "Licensed vet network + AI diagnostic tool. Regulatory moat - competitors need vet partnerships and AI training data.",
+                monetization: "$29/month subscriptions. Premium $49/month with house calls. Corporate B2B for employee pet benefits at $15/employee/month.",
+                reality: "Requires licensed vets (expensive), regulatory compliance varies by state, established players like Whiskers.vet exist but focus on appointments not anxiety relief."
+            },
+            {
+                title: "CodeReview AI",
+                tagline: "AI-powered code reviews that actually improve your codebase",
+                category: "DevTools",
+                score: 88,
+                painPoint: "Developers spend 6+ hours weekly on code reviews. 67% say reviews are too slow, 43% find them inconsistent. Junior devs learn slowly from sparse feedback.",
+                fix: "AI analyzes code for bugs, performance, security, and style. Explains improvements in plain English. Integrates with GitHub/GitLab.",
+                audience: "Engineering teams at startups and mid-size companies. CTOs who want faster shipping without sacrificing quality.",
+                gtm: "Freemium GitHub app, developer community content marketing, sponsor coding bootcamps and conferences.",
+                moat: "Training data from millions of code reviews + continuous learning from user feedback. Network effects as more teams use it.",
+                monetization: "Free for personal use. $25/developer/month for teams. Enterprise $100/dev/month with custom rules and reporting.",
+                reality: "Competitive market with GitHub Copilot, need significant AI infrastructure, developers skeptical of AI-generated feedback quality."
+            }
+        ];
+
+        let currentIdeaIndex = 0;
+
+        function showTodaysIdea() {
+            document.getElementById('onboarding').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            currentView = 'feed';
+            loadCurrentIdea();
+        }
+
+        function signUp() {
+            isSignedUp = true;
+            showTodaysIdea();
+        }
+
+        function loadCurrentIdea() {
+            const idea = startupIdeas[currentIdeaIndex];
+            document.getElementById('cardTitle').textContent = idea.title;
+            document.getElementById('cardTagline').textContent = idea.tagline;
+            document.getElementById('cardCategory').textContent = idea.category;
+            document.getElementById('signalScore').textContent = `Score: ${idea.score}`;
+            document.getElementById('painPoint').textContent = idea.painPoint;
+            
+            // Update detailed sections
+            const sections = document.querySelectorAll('#cardDetails .section-content');
+            sections[0].textContent = idea.fix;
+            sections[1].textContent = idea.audience;
+            sections[2].textContent = idea.gtm;
+            sections[3].textContent = idea.moat;
+            sections[4].textContent = idea.monetization;
+            sections[5].textContent = idea.reality;
+        }
+
+        function toggleCardDetails() {
+            const details = document.getElementById('cardDetails');
+            details.classList.toggle('hidden');
+        }
+
+        function likeIdea() {
+            if (cardSwiped) return;
+            const card = document.getElementById('startupCard');
+            card.style.transform = 'translateX(100%) rotate(15deg)';
+            card.style.opacity = '0';
+            cardSwiped = true;
+            
+            setTimeout(() => {
+                showEndOfDay();
+            }, 300);
+        }
+
+        function dislikeIdea() {
+            if (cardSwiped) return;
+            const card = document.getElementById('startupCard');
+            card.style.transform = 'translateX(-100%) rotate(-15deg)';
+            card.style.opacity = '0';
+            cardSwiped = true;
+            
+            setTimeout(() => {
+                showEndOfDay();
+            }, 300);
+        }
+
+        function saveIdea() {
+            const currentIdea = startupIdeas[currentIdeaIndex];
+            if (!savedIdeas.includes(currentIdea.title)) {
+                savedIdeas.push(currentIdea.title);
+                
+                // Add to vault display
+                const vaultGrid = document.getElementById('myVault');
+                const vaultCard = document.createElement('div');
+                vaultCard.className = 'vault-card';
+                vaultCard.innerHTML = `
+                    <div class="vault-card-title">${currentIdea.title}</div>
+                    <div class="vault-card-tagline">${currentIdea.tagline}</div>
+                `;
+                vaultGrid.appendChild(vaultCard);
+            }
+            
+            // Show save animation
+            const saveBtn = event.target;
+            saveBtn.style.transform = 'scale(1.3)';
+            saveBtn.style.background = 'linear-gradient(135deg, #00d4aa, #00b894)';
+            
+            setTimeout(() => {
+                saveBtn.style.transform = 'scale(1)';
+                saveBtn.style.background = 'linear-gradient(135deg, #feca57, #ff9ff3)';
+            }, 200);
+        }
+
+        function showEndOfDay() {
+            document.getElementById('startupCard').style.display = 'none';
+            document.getElementById('endOfDay').classList.remove('hidden');
+            
+            // Hide action buttons
+            document.querySelector('.action-buttons').style.opacity = '0.3';
+            document.querySelector('.action-buttons').style.pointerEvents = 'none';
+        }
+
+        function showFeed() {
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('feedContainer').classList.remove('hidden');
+            document.getElementById('vaultContainer').classList.add('hidden');
+            document.querySelector('.action-buttons').style.display = 'flex';
+        }
+
+        function showVault() {
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('feedContainer').classList.add('hidden');
+            document.getElementById('vaultContainer').classList.remove('hidden');
+            document.querySelector('.action-buttons').style.display = 'none';
+        }
+
+        function showMyVault() {
+            document.querySelectorAll('.vault-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('myVault').classList.remove('hidden');
+            document.getElementById('archive').classList.add('hidden');
+        }
+
+        function showArchive() {
+            document.querySelectorAll('.vault-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('myVault').classList.add('hidden');
+            document.getElementById('archive').classList.remove('hidden');
+            
+            // Show premium overlay
+            setTimeout(() => {
+                document.getElementById('premiumOverlay').style.display = 'flex';
+            }, 500);
+        }
+
+        function upgradeToPremium() {
+            alert('Premium upgrade successful! 🎉\n\nYou now have access to:\n• Full archive\n• Unlimited saves\n• Advanced filters\n• Weekly reports');
+            closePremium();
+            
+            // Unlock archive
+            document.querySelectorAll('#archive .vault-card').forEach(card => {
+                card.classList.remove('blur');
+                card.innerHTML = `
+                    <div class="vault-card-title">Archive Idea ${Math.floor(Math.random() * 100)}</div>
+                    <div class="vault-card-tagline">Previously generated startup idea</div>
+                `;
+            });
+        }
+
+        function closePremium() {
+            document.getElementById('premiumOverlay').style.display = 'none';
+        }
+
+        // Add swipe gesture support
+        let startX = 0;
+        let startY = 0;
+
+        document.getElementById('startupCard').addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        });
+
+        document.getElementById('startupCard').addEventListener('touchmove', (e) => {
+            if (cardSwiped) return;
+            
+            const currentX = e.touches[0].clientX;
+            const diffX = currentX - startX;
+            
+            const card = document.getElementById('startupCard');
+            const rotation = diffX * 0.1;
+            
+            card.style.transform = `translateX(${diffX}px) rotate(${rotation}deg)`;
+            card.style.opacity = 1 - Math.abs(diffX) / 300;
+        });
+
+        document.getElementById('startupCard').addEventListener('touchend', (e) => {
+            if (cardSwiped) return;
+            
+            const endX = e.changedTouches[0].clientX;
+            const diffX = endX - startX;
+            
+            if (Math.abs(diffX) > 100) {
+                if (diffX > 0) {
+                    likeIdea();
+                } else {
+                    dislikeIdea();
+                }
+            } else {
+                // Snap back
+                const card = document.getElementById('startupCard');
+                card.style.transform = 'translateX(0) rotate(0deg)';
+                card.style.opacity = '1';
+            }
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (currentView === 'feed' && !cardSwiped) {
+                if (e.key === 'ArrowLeft') dislikeIdea();
+                if (e.key === 'ArrowRight') likeIdea();
+                if (e.key === 's' || e.key === 'S') saveIdea();
+            }
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // App is ready
+            console.log('StartupCards app loaded');
+        });
+    </script>
+</body>
+</html>
